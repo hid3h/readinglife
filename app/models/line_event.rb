@@ -7,7 +7,6 @@ class LineEvent
   end
 
   def excute
-    # amazonから商品情報取得
-    AmazonSearcher.from_isbn(text: text)
+    BookSearcher.fetch_from_isbn(text: text)
   end
 end

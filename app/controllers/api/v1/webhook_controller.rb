@@ -1,8 +1,15 @@
 class Api::V1::WebhookController < ApplicationController
   # https://developers.line.biz/ja/reference/messaging-api/#webhooks
   def receive
-    return unless validate_sinature
-    LineEvent.new(events: params['events']).excute
+    unless validate_signature
+      return render status: 401, json: { status: 401, message: 'Unauthorized' }
+    end
+    
+    line_event = LineEvent.new(events: params['events'])
+    temp = BookSearchReplyer.new(line_event: line_event)
+    temp.execute if temp.executable?
+
+    render :json => 'ok'
   end
 
   def test
@@ -12,7 +19,7 @@ class Api::V1::WebhookController < ApplicationController
 
   private
 
-  def validate_sinature
+  def validate_signature
     http_request_body = request.raw_post # Request body string
     hash = OpenSSL::HMAC::digest(OpenSSL::Digest::SHA256.new, channel_secret, http_request_body)
     signature = Base64.strict_encode64(hash)

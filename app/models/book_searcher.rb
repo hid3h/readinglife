@@ -1,17 +1,14 @@
 class BookSearcher
-  class << self
+  attr_reader :text
 
-    def fetch_from_isbn(text:)
-      p "text", text
-      isbn = text
-      json = client.fetch_from_isbn(isbn)
-      p "json", json
-    end
+  include RakutenBookSearchable
 
-    private
+  def initialize(text:)
+    @text = text
+  end
 
-    def client
-      @client ||= GoogleBookSearcher.new
-    end
+  def isbn
+    # TODO textからisbnをいい感じにフォーマット
+    text.delete("^0-9")
   end
 end

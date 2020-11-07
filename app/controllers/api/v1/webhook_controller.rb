@@ -6,8 +6,9 @@ class Api::V1::WebhookController < ApplicationController
   end
 
   def test
-    p "channel_secret", channel_secret
-    render :json => "test"
+    text = '9784873113869'
+    res = BookSearcher.new(text: text).fetch_from_isbn
+    render :json => res
   end
 
   private

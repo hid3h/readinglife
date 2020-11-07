@@ -15,10 +15,11 @@ class BookSearchReplyer
       text: "テスト返してます"
     }
 
-    line_bot_client.reply_message(
+    res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
       message: message_hash
     )
+    p "res", res
   end
 
   private

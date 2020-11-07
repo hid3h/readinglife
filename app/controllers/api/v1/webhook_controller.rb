@@ -2,6 +2,7 @@ class Api::V1::WebhookController < ApplicationController
   # https://developers.line.biz/ja/reference/messaging-api/#webhooks
   def receive
     unless validate_signature
+      logger.error("不正リクエスト")
       return render status: 401, json: { status: 401, message: 'Unauthorized' }
     end
     

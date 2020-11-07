@@ -14,7 +14,7 @@ class Api::V1::WebhookController < ApplicationController
 
   def test
     p "channel_secret", channel_secret
-    render :json => "test"
+    render :json => "readinglifetest"
   end
 
   private

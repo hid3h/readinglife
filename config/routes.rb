@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   namespace 'api' do
     namespace 'v1' do
       post 'webhook', to: 'webhook#receive'
-      get 'test', to: 'webhook#test'
+      get 'webhook/test', to: 'webhook#test'
     end
   end
 end

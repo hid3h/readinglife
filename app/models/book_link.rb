@@ -1,0 +1,2 @@
+class BookLink < ApplicationRecord
+end

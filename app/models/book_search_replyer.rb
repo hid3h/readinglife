@@ -22,6 +22,7 @@ class BookSearchReplyer
         text: "見つかりませんでした。キーワードを変えるか、ISBNでの検索をお試しください。"
       }
     else
+      # TODO booksテーブルへ追加
       message_hash = make_template_message(books)
     end
     res = line_bot_client.reply_message(
@@ -37,9 +38,6 @@ class BookSearchReplyer
     # 最大10個しかかえせない
     books = books.slice(0, 9)
     columns = books.map.with_index { |item, index|
-      if index == 9
-        next
-      end
       {
         thumbnailImageUrl: item['largeImageUrl'],
         imageBackgroundColor: "#FFFFFF", # デフォルト

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_08_022743) do
+ActiveRecord::Schema.define(version: 2020_11_08_040257) do
 
   create_table "book_links", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "book_id", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2020_11_08_022743) do
     t.string "url", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["book_id", "site"], name: "index_book_links_on_book_id_and_site", unique: true
     t.index ["book_id"], name: "index_book_links_on_book_id"
   end
 

@@ -16,8 +16,8 @@ class BookSearchReplyer
         text: "見つかりませんでした。キーワードを変えるか、ISBNでの検索をお試しください。"
       }
     else
-      # TODO booksテーブルへ追加
-      message_hash = make_template_message(books)
+      ret_books = Book.create_by_rakuten_search_result(books)
+      message_hash = make_template_message(ret_books)
     end
     res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
@@ -31,12 +31,12 @@ class BookSearchReplyer
   def make_template_message(books)
     # 最大10個しかかえせない
     books = books.slice(0, 9)
-    columns = books.map.with_index { |item, index|
+    columns = books.map.with_index { |book, index|
       {
-        thumbnailImageUrl: item['largeImageUrl'],
+        thumbnailImageUrl: book.image_url,
         imageBackgroundColor: "#FFFFFF", # デフォルト
         # title: item["title"], # 任意
-        text: item["title"], # 必須
+        text: book.title, # 必須
         # defaultAction: {
         #   type: "uri",
         #   label: "View detail",
@@ -46,17 +46,17 @@ class BookSearchReplyer
           {
               type: "postback",
               label: "読んだ",
-              data: "action=buy&itemid=111"
+              data: "action=read&book_id=#{book.id}"
           },
           {
               type: "postback",
               label: "読みたい",
-              data: "action=add&itemid=111"
+              data: "action=want_to_read&book_id=#{book.id}"
           },
           {
-              type: "postback",
-              label: "詳細？",
-              data: "action=add&itemid=111"
+              type: "uri",
+              label: "楽天リンク",
+              uri: book.book_links.first.url # rakutneしかない
           }
         ]
       }

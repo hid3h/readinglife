@@ -25,6 +25,15 @@
       "name": "rails"
     },
     {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": null,
+        "options": {
+          "awslogs-group": "/ecs/readinglife-rails-task",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
       "command": ["rails", "db:migrate"],
       "memory": null,
       "memoryReservation": 50,

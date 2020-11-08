@@ -9,12 +9,6 @@ class BookSearchReplyer
   end
 
   def execute
-    # TODO
-    message_hash = {
-      type: 'text',
-      text: "テスト返してます"
-    }
-
     books = BookSearcher.new(text: @line_event.text).fetch
     if books.empty?
       message_hash = {

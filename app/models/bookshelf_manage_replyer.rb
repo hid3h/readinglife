@@ -1,21 +1,31 @@
-class BookshelfReplyer
+class BookshelfManageReplyer
   def initialize(line_event:)
     @line_event = line_event
   end
 
   def executable?
-    @line_event.text == ':読んだ本'
+    @line_event.postback_data
   end
 
   def execute
-    # ユーザー取得
     user = User.find_or_create_by_line_user_id(line_user_id: @line_event.line_user_id)
-    read_shelfs = Bookshelf.read.by_user(user)
     
-    message_hash = {
-      type: 'text',
-      text: "読んだ本はありません。"
-    }
+    read_shelf = Bookshelf.add_read(user: user, book_id: book_id)
+    p "book_id", action_type, book_id, read_shelf
+    
+    # TODO 既存か新しく追加の判別ってできる？
+    if read_shelf == true
+      message_hash = {
+        type: 'text',
+        text: "既に追加されています"
+      }
+    else
+      message_hash = {
+        type: 'text',
+        text: "追加しました"
+      }
+    end
+
     res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
       message: message_hash
@@ -24,6 +34,18 @@ class BookshelfReplyer
   end
 
   private
+
+  def book_id
+    postback_params['book_id']
+  end
+
+  def action_type
+    postback_params['action']
+  end
+
+  def postback_params
+    Rack::Utils.parse_nested_query(@line_event.postback_data)
+  end
 
   def make_template_message(books)
     # 最大10個しかかえせない

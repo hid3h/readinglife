@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_09_002722) do
+ActiveRecord::Schema.define(version: 2020_11_09_051016) do
 
   create_table "book_links", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "book_id", null: false
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2020_11_09_002722) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["book_id"], name: "index_bookshelves_on_book_id"
+    t.index ["user_id", "book_id"], name: "index_bookshelves_on_user_id_and_book_id", unique: true
     t.index ["user_id"], name: "index_bookshelves_on_user_id"
   end
 

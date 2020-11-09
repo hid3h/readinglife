@@ -5,6 +5,7 @@ class Bookshelf < ApplicationRecord
   enum status: [:read, :reading, :want]
 
   scope :by_user, ->(user) { where(user: user) }
+  scope :in_latest_add_order, -> { order(created_at: :desc) }
 
   class << self
     def add_read(user:, book_id:)

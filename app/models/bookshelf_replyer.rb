@@ -10,12 +10,16 @@ class BookshelfReplyer
   def execute
     # ユーザー取得
     user = User.find_or_create_by_line_user_id(line_user_id: @line_event.line_user_id)
-    read_shelfs = Bookshelf.read.by_user(user)
+    read_shelfs = Bookshelf.read.by_user(user).in_latest_add_order.limit(10)
     
-    message_hash = {
-      type: 'text',
-      text: "読んだ本はありません。"
-    }
+    if read_shelfs.empty?
+      message_hash = {
+        type: 'text',
+        text: "読んだ本はありません。"
+      }
+    else
+      message_hash = make_template_message(read_shelfs)
+    end
     res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
       message: message_hash
@@ -25,10 +29,10 @@ class BookshelfReplyer
 
   private
 
-  def make_template_message(books)
+  def make_template_message(read_shelfs)
     # 最大10個しかかえせない
-    books = books.slice(0, 9)
-    columns = books.map.with_index { |book, index|
+    columns = read_shelfs.map.with_index { |read_shelf, index|
+      book = read_shelf.book
       {
         thumbnailImageUrl: book.image_url,
         imageBackgroundColor: "#FFFFFF", # デフォルト
@@ -44,11 +48,6 @@ class BookshelfReplyer
               type: "postback",
               label: "読んだ",
               data: "action=read&book_id=#{book.id}"
-          },
-          {
-              type: "postback",
-              label: "読みたい",
-              data: "action=want_to_read&book_id=#{book.id}"
           },
           {
               type: "uri",

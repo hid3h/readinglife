@@ -46,8 +46,8 @@ class BookshelfReplyer
         actions: [
           {
               type: "postback",
-              label: "読んだ",
-              data: "action=read&book_id=#{book.id}"
+              label: "削除",
+              data: "action=delete&bookshelf_id=#{read_shelf.id}"
           },
           {
               type: "uri",

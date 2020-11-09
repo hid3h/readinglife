@@ -10,21 +10,39 @@ class BookshelfManageReplyer
   def execute
     user = User.find_or_create_by_line_user_id(line_user_id: @line_event.line_user_id)
     
-    read_shelf = Bookshelf.add_read(user: user, book_id: book_id)
-    p "book_id", action_type, book_id, read_shelf
-    
-    # TODO 既存か新しく追加の判別ってできる？
-    if read_shelf == true
-      message_hash = {
-        type: 'text',
-        text: "既に追加されています"
-      }
-    else
-      message_hash = {
-        type: 'text',
-        text: "#{read_shelf.book.title[0, 60]}を追加しました"
-      }
+    # TODO ここcaseで分けるのはリファクタリングできそう？
+    case action_type
+    when "read"
+      read_shelf = Bookshelf.add_read(user: user, book_id: book_id)
+      # TODO 既存か新しく追加の判別ってできる？
+      if read_shelf == true
+        message_hash = {
+          type: 'text',
+          text: "既に追加されています"
+        }
+      else
+        message_hash = {
+          type: 'text',
+          text: "#{read_shelf.book.title[0, 60]}を追加しました"
+        }
+      end
+    when "delete"
+      result = Bookshelf.find_by(id: bookshelf_id)
+      if result
+        book_title = result.book.title
+        result.delete
+        message_hash = {
+          type: 'text',
+          text: "#{book_title[0, 60]}を削除しました"
+        }
+      else
+        message_hash = {
+          type: 'text',
+          text: "既に削除されています"
+        }
+      end
     end
+    p "book_id", action_type, book_id, read_shelf
 
     res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
@@ -37,6 +55,10 @@ class BookshelfManageReplyer
 
   def book_id
     postback_params['book_id']
+  end
+
+  def bookshelf_id
+    postback_params['bookshelf_id']
   end
 
   def action_type

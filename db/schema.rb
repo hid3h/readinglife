@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_08_040257) do
+ActiveRecord::Schema.define(version: 2020_11_09_002722) do
 
   create_table "book_links", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "book_id", null: false
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(version: 2020_11_08_040257) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
   end
 
+  create_table "bookshelves", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "book_id", null: false
+    t.integer "status", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["book_id"], name: "index_bookshelves_on_book_id"
+    t.index ["user_id"], name: "index_bookshelves_on_user_id"
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "line_user_id", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -41,4 +51,6 @@ ActiveRecord::Schema.define(version: 2020_11_08_040257) do
   end
 
   add_foreign_key "book_links", "books"
+  add_foreign_key "bookshelves", "books"
+  add_foreign_key "bookshelves", "users"
 end

@@ -1,5 +1,10 @@
 class Api::V1::WebhookController < ApplicationController
   # https://developers.line.biz/ja/reference/messaging-api/#webhooks
+
+  EXECUTE_CANDIDATES = [
+    BookshelfReplyer,
+    BookSearchReplyer
+  ]
   def receive
     unless validate_signature
       logger.error("不正リクエスト")
@@ -7,8 +12,10 @@ class Api::V1::WebhookController < ApplicationController
     end
     
     line_event = LineEvent.new(events: params['events'])
-    temp = BookSearchReplyer.new(line_event: line_event)
-    temp.execute if temp.executable?
+    EXECUTE_CANDIDATES.each do |candidate|
+      temp = candidate.new(line_event: line_event)
+      return temp.execute if temp.executable?
+    end
 
     render :json => 'ok'
   end

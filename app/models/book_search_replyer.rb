@@ -23,7 +23,8 @@ class BookSearchReplyer
       reply_token: @line_event.reply_token,
       message: message_hash
     )
-    p "res", res
+    p "message_hash", message_hash
+    p "res", res.body
   end
 
   private
@@ -36,7 +37,7 @@ class BookSearchReplyer
         thumbnailImageUrl: book.image_url,
         imageBackgroundColor: "#FFFFFF", # デフォルト
         # title: item["title"], # 任意
-        text: book.title, # 必須
+        text: book.title[0, 60], # 必須
         # defaultAction: {
         #   type: "uri",
         #   label: "View detail",
@@ -47,11 +48,6 @@ class BookSearchReplyer
               type: "postback",
               label: "読んだ",
               data: "action=read&book_id=#{book.id}"
-          },
-          {
-              type: "postback",
-              label: "読みたい",
-              data: "action=want_to_read&book_id=#{book.id}"
           },
           {
               type: "uri",

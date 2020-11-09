@@ -22,7 +22,7 @@ class BookshelfManageReplyer
     else
       message_hash = {
         type: 'text',
-        text: "追加しました"
+        text: "#{read_shelf.book.title[0, 60]}を追加しました"
       }
     end
 

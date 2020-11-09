@@ -1,5 +1,6 @@
 class Bookshelf < ApplicationRecord
   belongs_to :user
+  belongs_to :book
 
   enum status: [:read, :reading, :want]
 

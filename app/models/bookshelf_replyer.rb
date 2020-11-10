@@ -24,39 +24,69 @@ class BookshelfReplyer
       reply_token: @line_event.reply_token,
       message: message_hash
     )
-    p "res", res
+    p "res", res.body
   end
 
   private
 
   def make_template_message(read_shelfs)
-    # 最大10個しかかえせない
-    columns = read_shelfs.map.with_index { |read_shelf, index|
+    # 最大10個しかかえせない.10こあったら10コメは次へみたいな。
+    columns = read_shelfs.map.with_index do |read_shelf, index|
       book = read_shelf.book
+
+      label_delete = "削除"
+      data         = "action=delete&bookshelf_id=#{read_shelf.id}"
+      label_link   = "楽天リンク"
+      uri          = book.book_links.first.url # rakutneしかない
+
+      actions = [
+        {
+            type: "postback",
+            label: label_delete,
+            data: data
+        },
+        {
+            type: "uri",
+            label: label_link,
+            uri: uri
+        }
+      ]
+
+      if index == 9
+        actions = [
+          {
+              type: "postback",
+              label: "次の9件を見る",
+              data: "action=next&bookshelf_id=#{read_shelf.id}"
+          },
+          {
+            type: "postback",
+            label: " ",
+            data: " "
+          }
+        ]
+      end
+
+      thumbnail_image_url = book.image_url
+      text = book.title
+
+      if index == 9
+        thumbnail_image_url = "https://example.com/bot/images/item1.jpg"
+        text = " "
+      end
       {
-        thumbnailImageUrl: book.image_url,
+        thumbnailImageUrl: thumbnail_image_url,
         imageBackgroundColor: "#FFFFFF", # デフォルト
         # title: item["title"], # 任意
-        text: book.title, # 必須
+        text: text, # 必須
         # defaultAction: {
         #   type: "uri",
         #   label: "View detail",
         #   uri: "http://example.com/page/123"
         # },
-        actions: [
-          {
-              type: "postback",
-              label: "削除",
-              data: "action=delete&bookshelf_id=#{read_shelf.id}"
-          },
-          {
-              type: "uri",
-              label: "楽天リンク",
-              uri: book.book_links.first.url # rakutneしかない
-          }
-        ]
+        actions: actions
       }
-    }
+    end
 
     template = {
       type: "carousel",

@@ -10,7 +10,7 @@ class BookshelfReplyer
   def execute
     # ユーザー取得
     user = User.find_or_create_by_line_user_id(line_user_id: @line_event.line_user_id)
-    read_shelfs = Bookshelf.includes(:book).read.by_user(user).in_latest_add_order.limit(10)
+    read_shelfs = Bookshelf.includes(book: :book_links).read.by_user(user).in_latest_add_order.limit(10)
     
     if read_shelfs.empty?
       message_hash = {

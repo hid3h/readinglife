@@ -32,7 +32,22 @@ class BookSearchReplyer
   def make_template_message(books)
     # 最大10個しかかえせない
     books = books.slice(0, 9)
-    columns = books.map.with_index { |book, index|
+    # TODO 登録ずみだったら既に登録してますって出したい。
+
+    columns = books.map.with_index do |book, index|
+      actions = [
+        {
+            type: "postback",
+            label: "読んだ",
+            data: "action=read&book_id=#{book.id}"
+        },
+        {
+            type: "uri",
+            label: "楽天リンク",
+            uri: book.book_links.first.url # rakutneしかない
+        }
+      ]
+
       {
         thumbnailImageUrl: book.image_url,
         imageBackgroundColor: "#FFFFFF", # デフォルト
@@ -43,20 +58,9 @@ class BookSearchReplyer
         #   label: "View detail",
         #   uri: "http://example.com/page/123"
         # },
-        actions: [
-          {
-              type: "postback",
-              label: "読んだ",
-              data: "action=read&book_id=#{book.id}"
-          },
-          {
-              type: "uri",
-              label: "楽天リンク",
-              uri: book.book_links.first.url # rakutneしかない
-          }
-        ]
+        actions: actions
       }
-    }
+    end
 
     template = {
       type: "carousel",

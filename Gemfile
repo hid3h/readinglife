@@ -43,3 +43,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'line-bot-api'
 gem 'mysql2'
+gem 'kaminari'
+gem 'gruff'

@@ -12,14 +12,29 @@ class BookshelfReplyer
     user = User.find_or_create_by_line_user_id(line_user_id: @line_event.line_user_id)
     read_shelfs = Bookshelf.includes(book: :book_links).read.by_user(user).in_latest_add_order.limit(10)
     
-    if read_shelfs.empty?
-      message_hash = {
-        type: 'text',
-        text: "読んだ本はありません。"
-      }
-    else
-      message_hash = make_template_message(read_shelfs)
-    end
+    # 月ごとのカウント
+    labels = %w(1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月)
+    data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1110, 0]
+    g = GruffCreater.new(labels: labels, data: data)
+      
+    filename = g.create
+    host = Rails.env.production? ? "https://noahstudio-search.com" : "http://127.0.0.1:2000"
+    image_url = host + filename
+
+    message_hash = {
+      type: "image",
+      originalContentUrl: image_url,
+      previewImageUrl: image_url
+    }
+  
+    # if read_shelfs.empty?
+    #   message_hash = {
+    #     type: 'text',
+    #     text: "読んだ本はありません。"
+    #   }
+    # else
+    #   message_hash = make_template_message(read_shelfs)
+    # end
     res = line_bot_client.reply_message(
       reply_token: @line_event.reply_token,
       message: message_hash

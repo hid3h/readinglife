@@ -20,7 +20,6 @@ class GruffCreater
   end
 
   def create
-    # @g.title = 'Wow!  Look at this!'
     @g.labels = @label_hash
     @g.data(:読んだ本, @data)
     @g.hide_legend = true

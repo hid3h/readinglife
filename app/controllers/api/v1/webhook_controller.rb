@@ -2,6 +2,7 @@ class Api::V1::WebhookController < ApplicationController
   # https://developers.line.biz/ja/reference/messaging-api/#webhooks
 
   EXECUTE_CANDIDATES = [
+    GraphReplyer,
     BookshelfManageReplyer,
     BookshelfReplyer,
     BookSearchReplyer
@@ -22,7 +23,16 @@ class Api::V1::WebhookController < ApplicationController
   end
 
   def test
-    p "channel_secret", channel_secret
+    events = [
+      {
+        'source' => {
+          'userId' => 'tes'
+        }
+      }
+    ]
+    line_event = LineEvent.new(events: events)
+    GraphReplyer.new(line_event: line_event).execute
+
     render :json => "readinglifetest"
   end
 
